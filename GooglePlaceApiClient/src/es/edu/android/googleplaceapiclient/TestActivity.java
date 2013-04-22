@@ -6,9 +6,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -68,7 +71,10 @@ public class TestActivity extends Activity {
 							
 							ArrayList<String> placeNames = new ArrayList<String>();
 							for (Place place : places) {
-								placeNames.add(place.getName());
+								if (place.getVicinity().contains("Madrid")) {
+									placeNames.add(place.getName() + "(" +
+									place.getVicinity() + ") + ID_PLACE: " + place.getId());
+								}
 							}
 							
 							return placeNames;
@@ -92,5 +98,36 @@ public class TestActivity extends Activity {
 		getMenuInflater().inflate(R.menu.test, menu);
 		return true;
 	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		if (item.getItemId() == R.id.menu_current_loc) {
+			
+			LocationManager locMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//			android.location.Location loc = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			locMan.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {}
+				
+				@Override
+				public void onProviderEnabled(String provider) {}
+				
+				@Override
+				public void onProviderDisabled(String provider) {}
+				
+				@Override
+				public void onLocationChanged(android.location.Location location) {
+					//TODO get location / get placeList -> id
+				}
+			}, null);
+		}
+//		else if (item.getItemId() == R.id.menu_search) {
+			//buscar
+//		}
+		
+		return true;
+	}
+	
+	
 
 }
